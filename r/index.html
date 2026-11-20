@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Abriendo Google…</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;background:#fff;color:#111;text-align:center;padding:24px;box-sizing:border-box}
+.box{max-width:340px}h1{font-size:22px;margin:0 0 8px}p{color:#555;margin:0 0 20px}
+a.btn{display:inline-block;padding:14px 22px;border-radius:999px;background:#1F5FD6;color:#fff;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="box" id="msg"><h1>Abriendo Google…</h1><p>Un momento, por favor.</p></div>
+<script>
+(function () {
+  // El código de la tarjeta va después del "?": .../r/?0001
+  var code = (location.search || "").replace(/^\?/, "").split("&")[0].trim();
+  var msg = document.getElementById("msg");
+  function sinActivar(contacto) {
+    msg.innerHTML = '<h1>Esta tarjeta aún no está activada</h1><p>Pronto podrás calificar este negocio desde aquí.</p>' +
+      (contacto ? '<a class="btn" href="' + contacto + '">¿Quieres una para tu negocio?</a>' : '');
+  }
+  fetch("destinos.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var url = d[code];
+      if (url && /^https?:\/\//.test(url)) { location.replace(url); }
+      else { sinActivar(d["_contacto"]); }
+    })
+    .catch(function () { sinActivar(""); });
+})();
+</script>
+</body>
+</html>
